@@ -90,3 +90,17 @@ def test_client_key_uses_forwarded_for_only_when_trusted(monkeypatch):
         monkeypatch.setitem(application.app.config, "TRUST_PROXY", True)
         assert application._client_key() == "203.0.113.9"
 
+
+def test_rate_limit_buckets_are_per_client_when_proxy_trusted(monkeypatch):
+    client = application.app.test_client()
+    monkeypatch.setitem(application.app.config, "TRUST_PROXY", True)
+    application._RATE_BUCKETS.clear()
+    noisy = {"X-Forwarded-For": "203.0.113.9"}
+    quiet = {"X-Forwarded-For": "198.51.100.7"}
+    for _ in range(4):
+        assert client.post("/api/analyze", json={}, headers=noisy).status_code == 400
+    throttled = client.post("/api/analyze", json={}, headers=noisy)
+    assert throttled.status_code == 429
+    assert throttled.headers.get("Retry-After") == "60"
+    assert client.post("/api/analyze", json={}, headers=quiet).status_code == 400
+
