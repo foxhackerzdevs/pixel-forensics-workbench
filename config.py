@@ -15,6 +15,8 @@ class Config:
     # Public deployment MUST set PIXEL_FORENSICS_SECRET to a long random value.
     SECRET_KEY = os.environ.get("PIXEL_FORENSICS_SECRET", "")
     ALLOWED_HOSTS = [host.strip().lower() for host in os.environ.get("PIXEL_FORENSICS_ALLOWED_HOSTS", "localhost,127.0.0.1,testserver").split(",") if host.strip()]
+    # Enable only when the app is reachable exclusively through a trusted reverse proxy.
+    TRUST_PROXY = os.environ.get("PIXEL_FORENSICS_TRUST_PROXY", "").strip().lower() in {"1", "true", "yes"}
     MAX_UPLOAD_BYTES = _int_env("PIXEL_FORENSICS_MAX_UPLOAD_BYTES", 20 * 1024 * 1024, 1024 * 1024, 20 * 1024 * 1024)
     # Allow a little multipart/form-data overhead beyond the file's own cap.
     MAX_CONTENT_LENGTH = MAX_UPLOAD_BYTES + 1024 * 1024

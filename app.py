@@ -150,7 +150,12 @@ def _directory_size(directory: Path) -> int:
     return total
 
 def _client_key() -> str:
-    # Do not trust X-Forwarded-For unless a trusted reverse proxy is explicitly configured.
+    # X-Forwarded-For is trusted only when a reverse proxy is explicitly configured.
+    # The proxy appends the real peer last, so the rightmost entry is the client.
+    if app.config.get("TRUST_PROXY"):
+        forwarded = request.headers.get("X-Forwarded-For", "")
+        if forwarded:
+            return forwarded.rsplit(",", 1)[-1].strip()[:64]
     return (request.remote_addr or "unknown")[:64]
 
 def _rate_limited(bucket: str) -> bool:

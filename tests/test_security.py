@@ -80,3 +80,13 @@ def test_health_endpoint_cors_headers():
     assert data["status"] == "ok"
     assert data["modules"] == 44
 
+
+def test_client_key_uses_forwarded_for_only_when_trusted(monkeypatch):
+    headers = {"X-Forwarded-For": "198.51.100.7, 203.0.113.9"}
+    environ = {"REMOTE_ADDR": "127.0.0.1"}
+    with application.app.test_request_context("/api/health", headers=headers, environ_base=environ):
+        monkeypatch.setitem(application.app.config, "TRUST_PROXY", False)
+        assert application._client_key() == "127.0.0.1"
+        monkeypatch.setitem(application.app.config, "TRUST_PROXY", True)
+        assert application._client_key() == "203.0.113.9"
+
