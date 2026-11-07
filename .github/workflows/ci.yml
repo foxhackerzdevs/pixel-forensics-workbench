@@ -31,3 +31,8 @@ jobs:
       - name: Run pytest
         run: |
           python -m pytest -q
+
+      - name: Audit dependencies
+        if: matrix.python-version == '3.12'
+        run: |
+          python -m pip_audit -r requirements.txt
