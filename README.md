@@ -28,13 +28,13 @@ A local-first Flask web app for inspecting image pixels, image statistics, spati
 ## Requirements
 
 - Windows 10/11, macOS, or Linux
-- Python 3.10 or newer
+- Python 3.11 or newer
 - Internet access the first time you install Python packages (Flask, NumPy, Pillow)
 
 ## Run on Windows 11
 
 1. Extract the ZIP to a normal writable folder, for example `C:\PixelF\pixel-forensics-workbench`.
-2. Install Python 3.10+ from [python.org](https://www.python.org/downloads/windows/). On the installer screen, enable **Add Python to PATH**.
+2. Install Python 3.11+ from [python.org](https://www.python.org/downloads/windows/). On the installer screen, enable **Add Python to PATH**.
 3. Double-click **`setup.bat`** once. It creates `.venv` and installs the dependencies from `requirements.txt`.
 4. Double-click **`run.bat`**. A terminal opens and the app starts at `http://127.0.0.1:5000`.
 5. Keep the terminal open while using the app. Press `Ctrl+C` in that terminal to stop the server.
