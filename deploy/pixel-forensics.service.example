@@ -8,6 +8,7 @@ User=pixel-forensics
 Group=pixel-forensics
 WorkingDirectory=/opt/pixel-forensics-workbench
 EnvironmentFile=/etc/pixel-forensics.env
+# Keep --workers 1 and omit --max-requests because sessions and rate limits live in worker memory.
 ExecStart=/opt/pixel-forensics-workbench/.venv/bin/gunicorn --workers 1 --threads 2 --timeout 240 --bind 127.0.0.1:8000 app:app
 Restart=on-failure
 RestartSec=3
@@ -17,7 +18,11 @@ PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
 ReadWritePaths=/opt/pixel-forensics-workbench/uploads /opt/pixel-forensics-workbench/results /opt/pixel-forensics-workbench/reports /opt/pixel-forensics-workbench/data
-MemoryMax=1G
+# Keep MemoryMax strictly below physical host RAM so the cgroup triggers before host-wide OOM.
+# Sized for a 1 GiB instance (measured ~63 MiB idle, ~116 MiB analysis peak); raise if host has more RAM.
+MemoryHigh=384M
+MemoryMax=448M
+MemorySwapMax=256M
 CPUQuota=150%
 TasksMax=64
 
